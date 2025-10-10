@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Updates | Tabuko Energy Network Corp.</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Images/Tabuko_logo-removebg-preview.png">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <style>
+    /* Clean updates section */
+    .updates-section {
+      background: #ffffff;
+      padding: 60px 0;
+      color: #000;
+      text-align: center;
+    }
+
+    .updates-section h2 {
+      font-size: 2rem;
+      margin-bottom: 24px;
+      font-weight: 700;
+    }
+
+    /* Loading animation */
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #ddd;
+      border-right: 6px solid #bbb;
+      border-bottom: 6px solid #999;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a class="navbar-logo" href="#">
+      <img src="./Images/Tabuko_logo-removebg-preview.png" alt="Company Logo" width="50" height="50">
+      TABUKO ENERGY NETWORK CORP.
+    </a>
+    <div class="hamburger" id="hamburger">
+      <i class="fas fa-bars"></i>
+    </div>
+    <div class="navbar-collapse" id="navbar-collapse">
+      <div class="navbar-links">
+        <ul>
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/about.html">About</a></li>
+          <li><a href="/Products.html">Products</a></li>
+          <li><a href="/Services.html">Services</a></li>
+          <li><a href="/Updates.html" class="active">Updates</a></li>
+          <li><a href="/ContactUs.html">Contact Us!</a></li>
+        </ul>
+      </div>
+      <div class="navbar-buttons">
+        <ul>
+          <li><a href="#">(+63)49-502-1488</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <section class="header-about">
+    <div class="container-about">
+      <div class="hero-content-about">
+        <p>LATEST UPDATES</p>
+        <h1>From Our Facebook Page</h1>
+        <br>
+        <p>See news, announcements, and activities.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- UPDATES SECTION -->
+  <section class="updates-section fade-in" data-aos="fade-up">
+    <div class="content-wrapper" style="max-width: 1200px; margin: 0 auto; padding: 24px;">
+      <h2 class="section-title">Latest Updates</h2>
+      <div class="loader" id="loader"></div>
+      <div id="updates-feed" class="updates-grid"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footerContainer">
+      <div class="socialIcons">
+        <a href="https://www.facebook.com/TABUKOENERGY.net" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://www.linkedin.com/in/mario-javier-92481772/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="https://x.com/TabukoEnergy" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+        <a href="https://www.youtube.com/@mariojavier9850" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+      </div>
+      <div class="footerNav">
+        <ul>
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/about.html">About</a></li>
+          <li><a href="/Products.html">Products</a></li>
+          <li><a href="/Services.html">Services</a></li>
+          <li><a href="/Updates.html">Updates</a></li>
+          <li><a href="/ContactUs.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footerBottom">
+      <p>Copyright &copy;2025; Designed by <span class="designer">OJT's</span></p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init();
+    window.addEventListener('load', () => {
+      document.getElementById('loader').style.display = 'none';
+    });
+  </script>
+
+  <!-- Facebook SDK not needed for clean cards -->
+</body>
+</html>

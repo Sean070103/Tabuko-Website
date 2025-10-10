@@ -213,8 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch {}
 
-            // Otherwise use PHP backend proxy (if available)
-            const res = await fetch('api/fb-updates.php', { cache: 'no-store' });
+            // Otherwise use PHP backend proxy (if available; custom path)
+            const res = await fetch('server/php/fb-updates.php', { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 if (data && Array.isArray(data.items)) {

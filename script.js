@@ -157,7 +157,9 @@ document.addEventListener("DOMContentLoaded", function () {
     elements.forEach(el => observer.observe(el));
   });
 
-AOS.init();
+if (typeof AOS !== 'undefined' && AOS && typeof AOS.init === 'function') {
+    AOS.init();
+}
 
 // UPDATES FEED RENDERER //
 document.addEventListener('DOMContentLoaded', () => {

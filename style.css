@@ -224,7 +224,7 @@ body {
 
 /* Header Styling */
 .header {
-    background-image: url('images/475776669_963797945866845_3191853479099639365_n.jpg'); /* Replace with your image path */
+    background-image: url('Images/475776669_963797945866845_3191853479099639365_n.jpg'); /* Replace with your image path */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -442,7 +442,7 @@ body {
 
 /* Header Styling */
 .header-about {
-    background-image: url('images/475776669_963797945866845_3191853479099639365_n.jpg'); 
+    background-image: url('Images/475776669_963797945866845_3191853479099639365_n.jpg'); 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

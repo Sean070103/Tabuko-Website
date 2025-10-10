@@ -191,13 +191,17 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // Prefer serverless endpoint if available (Vercel/Netlify)
             try {
-                const serverlessRes = await fetch('api/fb-updates', { cache: 'no-store' });
+                const serverlessRes = await fetch('/api/fb-updates', { cache: 'no-store' });
                 if (serverlessRes.ok) {
                     const data = await serverlessRes.json();
                     if (data && Array.isArray(data.items)) {
                         renderItems(data.items);
                         return;
                     }
+                } else {
+                    const text = await serverlessRes.text();
+                    updatesFeedEl.innerHTML = `<p>Serverless error (${serverlessRes.status}): ${text}</p>`;
+                    // continue to fallbacks
                 }
             } catch {}
 
@@ -210,17 +214,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         renderItems(data.items);
                         return;
                     }
+                } else {
+                    const text = await netlifyRes.text();
+                    updatesFeedEl.innerHTML = `<p>Netlify function error (${netlifyRes.status}): ${text}</p>`;
                 }
             } catch {}
 
             // Otherwise use PHP backend proxy (if available; custom path)
-            const res = await fetch('server/php/fb-updates.php', { cache: 'no-store' });
+            const res = await fetch('/server/php/fb-updates.php', { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 if (data && Array.isArray(data.items)) {
                     renderItems(data.items);
                     return;
                 }
+            } else {
+                const text = await res.text();
+                updatesFeedEl.innerHTML = `<p>PHP proxy error (${res.status}): ${text}</p>`;
             }
             throw new Error('Primary feed failed');
         } catch (e) {

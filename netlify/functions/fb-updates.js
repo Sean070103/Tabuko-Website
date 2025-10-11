@@ -9,7 +9,7 @@ export const handler = async () => {
       return { statusCode: 500, body: JSON.stringify({ error: 'FACEBOOK_TOKEN not configured' }) };
     }
 
-    const fields = 'posts.limit(6){message,created_time,full_picture,permalink_url}';
+    const fields = 'posts.limit(20){message,created_time,full_picture,permalink_url}';
     const url = `https://graph.facebook.com/v17.0/${encodeURIComponent(pageId)}?fields=${encodeURIComponent(fields)}&access_token=${encodeURIComponent(token)}`;
 
     const r = await fetch(url, { headers: { 'User-Agent': 'TabukoSite/1.0' } });

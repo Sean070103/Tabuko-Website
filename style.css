@@ -1,16 +1,47 @@
 /* Updates page */
 .updates-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding: 20px 0;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.updates-grid::-webkit-scrollbar {
+    height: 8px;
+}
+
+.updates-grid::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.updates-grid::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.updates-grid::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 .update-card {
     background: #ffffff;
-    border-radius: 8px;
+    border-radius: 12px;
     border: 1px solid rgba(0,0,0,0.08);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    min-width: 320px;
+    max-width: 400px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.update-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 .update-media img { width: 100%; height: auto; display: block; }
 .update-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }

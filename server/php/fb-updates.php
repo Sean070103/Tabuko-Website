@@ -12,7 +12,7 @@ if (!$token || !$pageId) {
     exit;
 }
 
-$fields = 'posts.limit(5){message,created_time,full_picture,permalink_url}';
+$fields = 'posts.limit(20){message,created_time,full_picture,permalink_url}';
 $url = 'https://graph.facebook.com/v17.0/' . rawurlencode($pageId) . '?fields=' . urlencode($fields) . '&access_token=' . urlencode($token);
 
 $context = stream_context_create([

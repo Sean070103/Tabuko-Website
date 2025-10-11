@@ -161,91 +161,58 @@ if (typeof AOS !== 'undefined' && AOS && typeof AOS.init === 'function') {
     AOS.init();
 }
 
-// UPDATES FEED RENDERER //
-document.addEventListener('DOMContentLoaded', () => {
-    const updatesFeedEl = document.getElementById('updates-feed');
-    if (!updatesFeedEl) return;
+// ==== DIRECT FACEBOOK FETCH ====
+document.addEventListener("DOMContentLoaded", () => {
+  const updatesFeedEl = document.getElementById("updates-feed");
+  const loader = document.getElementById("loader");
+  if (!updatesFeedEl) return;
 
-    // Credentials are hidden on serverless/PHP backends via environment variables.
+  const pageId = "1831901967082582"; // Your Page ID
+  const accessToken = "EAAWWP39dzKYBPtxOZBlV4ZAdR4dZCUSQLj6vWBMmZCNUpOy9nqRcfUfcxWDtnciYdUMKd64W8DFYQ1w6kqWAcaQECIviQD14heESbwXJGlNgWHGGGr3pTRuElqYNYuoTqOfz69ZBtIkFezKduDndc9yMsFQaf3COaMo78gTdSinLT2TIvhQug1lDZAFlU1"; // Your Page access token
 
-    const renderItems = (items) => {
-        items.sort((a, b) => new Date(b.date) - new Date(a.date));
-        const html = items.map(item => {
-            const date = item.date ? new Date(item.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-            const image = item.image ? `<div class="update-media"><img src="${item.image}" alt="${item.title}"></div>` : '';
-            return `
-            <article class="update-card">
-                ${image}
-                <div class="update-body">
-                    <div class="update-title">${item.title || ''}</div>
-                    <div class="update-meta">${date}</div>
-                    <div class="update-excerpt">${item.excerpt || ''}</div>
-                    <div class="update-actions">
-                        ${item.sourceUrl ? `<a href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer">View on Facebook</a>` : ''}
-                    </div>
-                </div>
-            </article>`;
-        }).join('');
-        updatesFeedEl.innerHTML = html;
-    };
+  fetch(
+    `https://graph.facebook.com/v20.0/${pageId}/feed?fields=message,created_time,full_picture,permalink_url&access_token=${accessToken}&limit=6`
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      loader.style.display = "none";
+      if (!data.data) {
+        updatesFeedEl.innerHTML = "<p>No posts found.</p>";
+        return;
+      }
 
-    const fetchWithFallback = async () => {
-        try {
-            // Prefer serverless endpoint if available (Vercel/Netlify)
-            try {
-                const serverlessRes = await fetch('/api/fb-updates', { cache: 'no-store' });
-                if (serverlessRes.ok) {
-                    const data = await serverlessRes.json();
-                    if (data && Array.isArray(data.items)) {
-                        renderItems(data.items);
-                        return;
-                    }
-                } else {
-                    const text = await serverlessRes.text();
-                    updatesFeedEl.innerHTML = `<p>Serverless error (${serverlessRes.status}): ${text}</p>`;
-                    // continue to fallbacks
-                }
-            } catch {}
+      updatesFeedEl.innerHTML = data.data
+        .map((post) => {
+          const imageHTML = post.full_picture
+            ? `<img src="${post.full_picture}" alt="Facebook post image" style="width:100%;height:200px;object-fit:cover;border-top-left-radius:12px;border-top-right-radius:12px;">`
+            : `<div style="height:200px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#888;">⭐</div>`;
 
-            // Try Netlify functions path if deployed on Netlify
-            try {
-                const netlifyRes = await fetch('/.netlify/functions/fb-updates', { cache: 'no-store' });
-                if (netlifyRes.ok) {
-                    const data = await netlifyRes.json();
-                    if (data && Array.isArray(data.items)) {
-                        renderItems(data.items);
-                        return;
-                    }
-                } else {
-                    const text = await netlifyRes.text();
-                    updatesFeedEl.innerHTML = `<p>Netlify function error (${netlifyRes.status}): ${text}</p>`;
-                }
-            } catch {}
+          const date = new Date(post.created_time).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
 
-            // Otherwise use PHP backend proxy (if available; custom path)
-            const res = await fetch('/server/php/fb-updates.php', { cache: 'no-store' });
-            if (res.ok) {
-                const data = await res.json();
-                if (data && Array.isArray(data.items)) {
-                    renderItems(data.items);
-                    return;
-                }
-            } else {
-                const text = await res.text();
-                updatesFeedEl.innerHTML = `<p>PHP proxy error (${res.status}): ${text}</p>`;
-            }
-            throw new Error('Primary feed failed');
-        } catch (e) {
-            // Fallback to local JSON
-            try {
-                const res = await fetch('data/updates.json', { cache: 'no-store' });
-                const items = await res.json();
-                renderItems(items);
-            } catch {
-                updatesFeedEl.innerHTML = '<p>Unable to load updates right now.</p>';
-            }
-        }
-    };
+          const text = post.message
+            ? post.message.split("\n")[0].slice(0, 100)
+            : "Facebook Update";
 
-    fetchWithFallback();
+          return `
+            <article class="update-card" style="background:#fff;border-radius:12px;box-shadow:0 4px 8px rgba(0,0,0,0.1);overflow:hidden;max-width:360px;">
+              ${imageHTML}
+              <div style="padding:16px;">
+                <div style="font-weight:700;font-size:1rem;margin-bottom:4px;">${text}</div>
+                <div style="color:#777;font-size:0.9rem;margin-bottom:8px;">${date}</div>
+                <a href="${post.permalink_url}" target="_blank" style="color:#007bff;text-decoration:none;font-weight:600;">View on Facebook</a>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+    })
+    .catch((err) => {
+      console.error("Error fetching posts:", err);
+      loader.style.display = "none";
+      updatesFeedEl.innerHTML = "<p>Failed to load updates.</p>";
+    });
 });

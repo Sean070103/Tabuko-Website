@@ -256,19 +256,39 @@ async function loadFacebookFeed() {
 document.addEventListener("DOMContentLoaded", () => {
   loadFacebookFeed();
   initTraditionalCarousel();
+  removeAutoScrollElements();
 });
 
-// Traditional carousel functionality
+// Remove any auto-scroll elements
+function removeAutoScrollElements() {
+  // Remove any elements with auto-scroll related classes or IDs
+  const autoElements = document.querySelectorAll(
+    '.auto-scroll-indicator, .auto-play-indicator, #autoPlayIndicator, #auto-scroll-indicator, [class*="auto-scroll"], [class*="auto-play"]'
+  );
+  
+  autoElements.forEach(element => {
+    element.remove();
+  });
+  
+  // Also remove any elements that might contain "Auto-scrolling" text
+  const allElements = document.querySelectorAll('*');
+  allElements.forEach(element => {
+    if (element.textContent && element.textContent.includes('Auto-scrolling')) {
+      element.remove();
+    }
+  });
+}
+
+// Automatic carousel functionality
 let currentSlide = 0;
 let totalSlides = 0;
 let cardsPerView = 3;
 let autoPlayInterval = null;
-let isAutoPlay = true;
+let lastPostCount = 0;
 
 function initTraditionalCarousel() {
   const updatesGrid = document.getElementById('updates-feed');
   const indicators = document.getElementById('carouselIndicators');
-  const autoPlayIndicator = document.getElementById('autoPlayIndicator');
   
   if (!updatesGrid) return;
 
@@ -276,10 +296,25 @@ function initTraditionalCarousel() {
   setTimeout(() => {
     setupCarousel();
   }, 1000);
+  
+  // Fallback: Try to initialize again after 3 seconds if no cards found
+  setTimeout(() => {
+    const cards = updatesGrid.querySelectorAll('.update-card');
+    if (cards.length > 0 && totalSlides === 0) {
+      console.log('Fallback: Re-initializing carousel...');
+      setupCarousel();
+    }
+  }, 3000);
 
   function setupCarousel() {
     const cards = updatesGrid.querySelectorAll('.update-card');
     if (cards.length === 0) return;
+
+    // Check if new posts were added
+    if (cards.length > lastPostCount) {
+      currentSlide = 0; // Reset to first slide for new posts
+      lastPostCount = cards.length;
+    }
 
     // Calculate cards per view based on screen size
     updateCardsPerView();
@@ -287,13 +322,32 @@ function initTraditionalCarousel() {
     // Calculate total slides
     totalSlides = Math.ceil(cards.length / cardsPerView);
     
+    // Create infinite loop by duplicating cards
+    createInfiniteLoop();
+    
     // Create indicators
     createIndicators();
     
-    // Start auto-play
-    if (isAutoPlay) {
-      startAutoPlay();
-    }
+    // Start continuous auto-play
+    startContinuousAutoPlay();
+    console.log('Infinite carousel initialized with', totalSlides, 'slides');
+  }
+
+  function createInfiniteLoop() {
+    const cards = updatesGrid.querySelectorAll('.update-card');
+    if (cards.length === 0) return;
+
+    // Clone all cards and append them for seamless loop
+    const clonedCards = Array.from(cards).map(card => card.cloneNode(true));
+    clonedCards.forEach(clonedCard => {
+      clonedCard.classList.add('cloned-card');
+      updatesGrid.appendChild(clonedCard);
+    });
+
+    // Set initial position to show first set of cards
+    const cardWidth = cards[0].offsetWidth;
+    const gap = 32;
+    updatesGrid.style.transform = `translateX(0px)`;
   }
 
   function updateCardsPerView() {
@@ -327,14 +381,51 @@ function initTraditionalCarousel() {
   }
 
   function updateCarousel() {
-    const cards = updatesGrid.querySelectorAll('.update-card');
+    const cards = updatesGrid.querySelectorAll('.update-card:not(.cloned-card)');
     if (cards.length === 0) return;
+
+    // Add sliding class for smooth animation
+    updatesGrid.classList.add('sliding');
 
     const cardWidth = cards[0].offsetWidth;
     const gap = 32; // 2rem gap
     const translateX = -(currentSlide * (cardWidth + gap) * cardsPerView);
     
+    // Apply smooth transform
     updatesGrid.style.transform = `translateX(${translateX}px)`;
+    
+    // Add slide animations to visible cards
+    const allCards = updatesGrid.querySelectorAll('.update-card');
+    allCards.forEach((card, index) => {
+      const isVisible = index >= currentSlide * cardsPerView && 
+                       index < (currentSlide + 1) * cardsPerView;
+      
+      if (isVisible) {
+        card.classList.add('slide-in');
+        card.classList.remove('slide-out');
+      } else {
+        card.classList.add('slide-out');
+        card.classList.remove('slide-in');
+      }
+    });
+    
+    // Handle infinite loop reset
+    if (currentSlide >= totalSlides) {
+      setTimeout(() => {
+        console.log('Resetting to start for infinite loop');
+        updatesGrid.style.transition = 'none';
+        updatesGrid.style.transform = 'translateX(0px)';
+        currentSlide = 0;
+        setTimeout(() => {
+          updatesGrid.style.transition = 'transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        }, 50);
+      }, 1200);
+    }
+    
+    // Remove sliding class after animation
+    setTimeout(() => {
+      updatesGrid.classList.remove('sliding');
+    }, 1500);
     
     // Update indicators
     const dots = indicators.querySelectorAll('.carousel-dot');
@@ -343,12 +434,50 @@ function initTraditionalCarousel() {
     });
   }
 
+  function nextSlideInfinite() {
+    const cards = updatesGrid.querySelectorAll('.update-card:not(.cloned-card)');
+    if (cards.length === 0) return;
+
+    const cardWidth = cards[0].offsetWidth;
+    const gap = 32;
+    const slideWidth = (cardWidth + gap) * cardsPerView;
+    
+    currentSlide++;
+    
+    // Calculate the new position
+    const newPosition = -(currentSlide * slideWidth);
+    updatesGrid.style.transform = `translateX(${newPosition}px)`;
+    
+    console.log(`Infinite slide ${currentSlide}, position: ${newPosition}px`);
+    
+    // If we've moved past all original slides, reset to beginning
+    if (currentSlide >= totalSlides) {
+      setTimeout(() => {
+        console.log('Resetting to start for infinite loop');
+        currentSlide = 0;
+        updatesGrid.style.transition = 'none';
+        updatesGrid.style.transform = 'translateX(0px)';
+        setTimeout(() => {
+          updatesGrid.style.transition = 'transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        }, 50);
+      }, 1200);
+    }
+    
+    // Update indicators
+    const dots = indicators.querySelectorAll('.carousel-dot');
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === (currentSlide % totalSlides));
+    });
+  }
+
   function nextSlide() {
-    currentSlide = (currentSlide + 1) % totalSlides;
+    console.log(`Moving from slide ${currentSlide} to ${currentSlide + 1}`);
+    currentSlide++;
     updateCarousel();
   }
 
   function prevSlide() {
+    console.log(`Moving from slide ${currentSlide} to ${(currentSlide - 1 + totalSlides) % totalSlides}`);
     currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
     updateCarousel();
   }
@@ -359,11 +488,22 @@ function initTraditionalCarousel() {
     resetAutoPlay();
   }
 
+  function startContinuousAutoPlay() {
+    if (autoPlayInterval) clearInterval(autoPlayInterval);
+    console.log('Starting continuous infinite carousel...');
+    autoPlayInterval = setInterval(() => {
+      console.log('Auto-moving to next slide...');
+      nextSlideInfinite();
+    }, 3000); // 3 seconds for continuous movement
+  }
+
   function startAutoPlay() {
     if (autoPlayInterval) clearInterval(autoPlayInterval);
-    autoPlayInterval = setInterval(nextSlide, 5000); // 5 seconds - slower
-    autoPlayIndicator.textContent = 'Auto-play';
-    autoPlayIndicator.classList.remove('paused');
+    console.log('Starting auto-play carousel...');
+    autoPlayInterval = setInterval(() => {
+      console.log('Auto-moving to next slide...');
+      nextSlide();
+    }, 4000); // 4 seconds for more dynamic movement
   }
 
   function stopAutoPlay() {
@@ -371,26 +511,12 @@ function initTraditionalCarousel() {
       clearInterval(autoPlayInterval);
       autoPlayInterval = null;
     }
-    autoPlayIndicator.textContent = 'Paused';
-    autoPlayIndicator.classList.add('paused');
   }
 
   function resetAutoPlay() {
-    if (isAutoPlay) {
-      stopAutoPlay();
-      setTimeout(startAutoPlay, 1000); // Resume after 1 second
-    }
+    stopAutoPlay();
+    setTimeout(startContinuousAutoPlay, 1000); // Resume after 1 second
   }
-
-  // Toggle auto-play
-  autoPlayIndicator.addEventListener('click', () => {
-    isAutoPlay = !isAutoPlay;
-    if (isAutoPlay) {
-      startAutoPlay();
-    } else {
-      stopAutoPlay();
-    }
-  });
 
   // Keyboard navigation
   document.addEventListener('keydown', (e) => {
@@ -436,15 +562,13 @@ function initTraditionalCarousel() {
     }
     
     isDragging = false;
-    if (isAutoPlay) {
-      setTimeout(startAutoPlay, 2000); // Resume after 2 seconds
-    }
+    setTimeout(startContinuousAutoPlay, 2000); // Resume after 2 seconds
   });
 
   // Pause on hover
   updatesGrid.addEventListener('mouseenter', stopAutoPlay);
   updatesGrid.addEventListener('mouseleave', () => {
-    if (isAutoPlay) startAutoPlay();
+    startContinuousAutoPlay();
   });
 
   // Handle window resize
@@ -455,4 +579,14 @@ function initTraditionalCarousel() {
     createIndicators();
     updateCarousel();
   });
+
+  // Check for new posts every 30 seconds
+  setInterval(() => {
+    const cards = updatesGrid.querySelectorAll('.update-card');
+    if (cards.length > lastPostCount) {
+      currentSlide = 0; // Reset to first slide for new posts
+      lastPostCount = cards.length;
+      setupCarousel();
+    }
+  }, 30000);
 }

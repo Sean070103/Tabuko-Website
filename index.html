@@ -29,9 +29,9 @@
           <ul>
               <li><a href="/index.html">Home</a></li>
               <li><a href="/about.html">About</a></li>
-              <li><a href="/Products.html">Products</a></li>
               <li><a href="/Services.html">Services</a></li>
-              <li><a href="/Updates.html">Updates</a></li>
+              <li><a href="/Products.html">Products</a></li>
+              <li><a href="/Updates.html">Update</a></li>
               <li><a href="/ContactUs.html">Contact Us!</a></li>
           </ul>
         </div>
@@ -55,9 +55,9 @@
           <nav class="mobile-nav">
             <a href="/index.html" class="mobile-nav-link">Home</a>
             <a href="/about.html" class="mobile-nav-link">About</a>
-            <a href="/Products.html" class="mobile-nav-link">Products</a>
             <a href="/Services.html" class="mobile-nav-link">Services</a>
-            <a href="/Updates.html" class="mobile-nav-link">Updates</a>
+            <a href="/Products.html" class="mobile-nav-link">Products</a>
+            <a href="/Updates.html" class="mobile-nav-link">Update</a>
             <a href="/ContactUs.html" class="mobile-nav-link">Contact Us!</a>
           </nav>
         </div>
@@ -271,20 +271,17 @@
         </div>
     </section>
 
-    <!-- Products Section -->
+    <!-- Updates Section (replaces Products on home page) -->
 
     <section class="product-section">
-        <h2 class="section-title">PRODUCTS</h2>
-    
-        <div class="filter-container fade-in">
-            <button class="filter-btn active" data-target="all">All</button>
-            <button class="filter-btn" data-target="barcol-air">BARCOL-AIR</button>
-            <button class="filter-btn" data-target="t-t-electric">T-T ELECTRIC</button>
-            <button class="filter-btn" data-target="dse">DSE</button>
-            <button class="filter-btn" data-target="pmi">PMI</button>
+        <h2 class="section-title">LATEST UPDATES</h2>
+        <div class="carousel-container">
+            <div id="updates-feed" class="updates-grid"></div>
+            <div id="carouselIndicators" class="carousel-indicators"></div>
+            <div id="loader" style="text-align:center; padding: 16px;">Loading updates...</div>
         </div>
         
-        <section id="products">
+        <section id="products" style="display:none">
             <div class="product-grid fade-in">
                 <!-- Barcol-Air -->
                 <div class="product-card" data-category="barcol-air">

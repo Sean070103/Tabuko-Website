@@ -183,14 +183,44 @@ async function loadFacebookFeed() {
       const link = item.querySelector("link")?.textContent;
       const desc = item.querySelector("description")?.textContent || "";
       
-      // Simple image extraction - just from description HTML
+      // Enhanced image extraction from multiple sources
       let imageUrl = null;
-      if (desc.includes('<img')) {
+      
+      // Try to get image from media:content first
+      const mediaContent = item.querySelector("media\\:content, content");
+      if (mediaContent && mediaContent.getAttribute("url")) {
+        imageUrl = mediaContent.getAttribute("url");
+      }
+      
+      // If no media:content, try description HTML
+      if (!imageUrl && desc.includes('<img')) {
         const imgMatch = desc.match(/<img[^>]+src="([^"]+)"/);
         if (imgMatch) imageUrl = imgMatch[1];
       }
+      
+      // If still no image, try to extract from any img tag in description
+      if (!imageUrl && desc.includes('src=')) {
+        const srcMatch = desc.match(/src="([^"]+)"/);
+        if (srcMatch) imageUrl = srcMatch[1];
+      }
+      
+      // Clean up image URL if found
+      if (imageUrl) {
+        // Remove any query parameters that might cause issues
+        imageUrl = imageUrl.split('?')[0];
+        // Ensure it's a valid URL
+        if (!imageUrl.startsWith('http')) {
+          imageUrl = null;
+        }
+      }
 
-      console.log(`Item ${index + 1}:`, { title, link, hasImage: !!imageUrl });
+      console.log(`Item ${index + 1}:`, { 
+        title, 
+        link, 
+        hasImage: !!imageUrl, 
+        imageUrl: imageUrl,
+        description: desc.substring(0, 100) + '...'
+      });
 
       const card = document.createElement("article");
       card.className = "update-card";
@@ -198,9 +228,18 @@ async function loadFacebookFeed() {
       // Clean up description HTML and limit length
       const cleanDesc = desc.replace(/<[^>]*>/g, '').substring(0, 150);
       
+      // Create image with fallback
+      const createImageElement = (url) => {
+        return `<div class="modern-image-container">
+          <img src="${url}" alt="${title}" class="modern-image" 
+               onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';"
+               loading="lazy">
+        </div>`;
+      };
+
       card.innerHTML = `
         <div class="modern-card-header">
-          ${imageUrl ? `<div class="modern-image-container"><img src="${imageUrl}" alt="${title}" class="modern-image" onerror="this.style.display='none'"></div>` : `<div class="modern-placeholder"><div class="placeholder-icon">📱</div><div class="placeholder-text">Facebook Post</div></div>`}
+          ${imageUrl ? createImageElement(imageUrl) : `<div class="modern-placeholder"><div class="placeholder-icon">📱</div><div class="placeholder-text">Facebook Post</div></div>`}
           <div class="modern-overlay">
             <div class="modern-badge">Facebook</div>
           </div>

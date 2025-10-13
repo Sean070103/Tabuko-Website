@@ -245,6 +245,11 @@ async function loadFacebookFeed() {
   const updatesFeedEl = document.getElementById("updates-feed");
   const loader = document.getElementById("loader");
 
+  // If we're not on the Updates page (elements not present), skip safely
+  if (!updatesFeedEl || !loader) {
+    return;
+  }
+
   try {
     const res = await fetch(rssUrl);
     const text = await res.text();
@@ -327,13 +332,16 @@ async function loadFacebookFeed() {
     });
   } catch (error) {
     console.error("Error loading feed:", error);
-    loader.style.display = "none";
-    updatesFeedEl.innerHTML = "<p>Unable to load updates at this time.</p>";
+    if (loader) loader.style.display = "none";
+    if (updatesFeedEl) updatesFeedEl.innerHTML = "<p>Unable to load updates at this time.</p>";
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadFacebookFeed();
+  // Only attempt to load the feed if the container exists on the page
+  if (document.getElementById("updates-feed")) {
+    loadFacebookFeed();
+  }
   initTraditionalCarousel();
   removeAutoScrollElements();
 });

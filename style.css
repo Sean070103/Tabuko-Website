@@ -1107,7 +1107,7 @@ button[class*="auto"] {
 
 body {
     font-family: 'Century Gothic';
-    margin-top: 70px; /* Adjust this value based on your navbar height */
+    margin-top: 0; /* Remove top margin to eliminate gap */
 }
 
 .navbar {
@@ -1619,7 +1619,7 @@ body {
     position: relative; /* For the optional overlay */
     color: #fff; /* Text color */
     font-family: Arial, sans-serif;
-    padding: 100px 0;
+    padding: 70px 0 100px 0; /* Add top padding to account for navbar */
     width: 100%; /* Ensure full width */
     min-height: 100vh; /* Minimum full viewport height */
 }
@@ -1629,35 +1629,35 @@ body {
     .header {
         height: auto;
         min-height: 80vh;
-        padding: 80px 0;
+        padding: 70px 0 80px 0;
     }
 }
 
 @media (max-width: 992px) {
     .header {
         min-height: 70vh;
-        padding: 60px 0;
+        padding: 70px 0 60px 0;
     }
 }
 
 @media (max-width: 768px) {
     .header {
         min-height: 60vh;
-        padding: 40px 0;
+        padding: 70px 0 40px 0;
     }
 }
 
 @media (max-width: 576px) {
     .header {
         min-height: 50vh;
-        padding: 30px 0;
+        padding: 70px 0 30px 0;
     }
 }
 
 @media (max-width: 480px) {
     .header {
         min-height: 40vh;
-        padding: 20px 0;
+        padding: 70px 0 20px 0;
     }
 }
 
@@ -1893,7 +1893,7 @@ body {
 @media (max-width: 768px) {
     .header {
         height: auto;
-        padding: 20px;
+        padding: 70px 20px 20px 20px; /* Add top padding for navbar */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1963,7 +1963,7 @@ body {
 
 @media (max-width: 576px) {
     .header {
-        padding: 15px;
+        padding: 70px 15px 15px 15px; /* Add top padding for navbar */
         min-height: 70vh;
     }
     
@@ -1984,7 +1984,7 @@ body {
 
 @media (max-width: 480px) {
     .header {
-        padding: 10px;
+        padding: 70px 10px 10px 10px; /* Add top padding for navbar */
         min-height: 60vh;
     }
     
@@ -2010,7 +2010,7 @@ body {
 
 @media (max-width: 360px) {
     .header {
-        padding: 8px;
+        padding: 70px 8px 8px 8px; /* Add top padding for navbar */
         min-height: 50vh;
     }
     
@@ -2421,7 +2421,7 @@ body {
 /* Responsive design for smaller screens */
 @media (max-width: 768px) {
     body {
-        margin-top: 64px; /* tighter under navbar on mobile */
+        margin-top: 0; /* Remove margin to eliminate gap */
     }
     .navbar {
         padding: 10px 16px;
@@ -2519,7 +2519,7 @@ body {
 
 @media (max-width: 480px) {
     body {
-        margin-top: 56px; /* compact on small phones */
+        margin-top: 0; /* Remove margin to eliminate gap */
     }
     .navbar {
         padding: 8px 14px;

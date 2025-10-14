@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Profile | Tabuko Energy Network Corp.</title>
+
+    <link rel="icon" type="image/png" href="../Images/Tabuko_logo-removebg-preview.png">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Simple, responsive gallery */
+        body { background: #ffffff; }
+        .company-header {
+            padding: 80px 16px 24px;
+            text-align: center;
+            color: #000;
+        }
+        .company-header h1 { margin: 0; font-size: clamp(1.6rem, 3.5vw, 2.4rem); }
+        .company-header p { margin: 8px 0 0; opacity: 0.8; }
+
+        .gallery-container { max-width: 100%; margin: 0 auto; padding: 0 16px 24px; }
+        .gallery-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+            background: transparent;
+            cursor: zoom-in;
+            width: 100%;
+            max-width: 780px; /* slightly narrower to feel more zoomed out */
+        }
+        .gallery-item img {
+            width: 100%;
+            height: auto; /* keep natural ratio */
+            max-height: 70vh; /* avoid filling entire viewport */
+            object-fit: contain; /* show more of the image (zoomed out) */
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover img { transform: scale(1.03); }
+
+        /* Lightbox */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        .lightbox-overlay.active { display: flex; }
+        .lightbox-content { max-width: 92vw; max-height: 85vh; border-radius: 10px; object-fit: contain; transition: transform .2s ease; }
+        .lightbox-close {
+            position: absolute; top: 16px; right: 16px;
+            background: rgba(0,0,0,.5); color: #fff; border: none; font-size: 28px; cursor: pointer; border-radius: 8px; padding: 6px 10px;
+        }
+        .lightbox-prev, .lightbox-next {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,.5); color: #fff; border: none; font-size: 28px; cursor: pointer; border-radius: 8px; padding: 8px 12px;
+        }
+        .lightbox-prev { left: 16px; }
+        .lightbox-next { right: 16px; }
+        .lightbox-toolbar {
+            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,.45); color: #fff; padding: 8px 12px; border-radius: 10px;
+            font-size: 14px;
+        }
+        .lightbox-btn { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+        .lightbox-counter { opacity: .9; }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR (keeps the same style and order used across the site) -->
+    <nav class="navbar">
+      <a class="navbar-logo" href="/index.html">
+          <img src="../Images/Tabuko_logo-removebg-preview.png" alt="Company Logo" width="50" height="50">
+          TABUKO ENERGY NETWORK CORP.
+      </a>
+      <div class="navbar-desktop">
+        <div class="navbar-links">
+          <ul>
+              <li><a href="/index.html">Home</a></li>
+              <li><a href="/about.html">About</a></li>
+              <li><a href="/Services.html">Servivces</a></li>
+              <li><a href="/Products.html">Product</a></li>
+              <li><a href="/CompanyProfile/" aria-current="page">Company Profile</a></li>
+              <li><a href="/ContactUs.html">Contact Us!</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-content">
+          <nav class="mobile-nav">
+            <a href="/index.html" class="mobile-nav-link">Home</a>
+            <a href="/about.html" class="mobile-nav-link">About</a>
+            <a href="/Services.html" class="mobile-nav-link">Servivces</a>
+            <a href="/Products.html" class="mobile-nav-link">Product</a>
+            <a href="/CompanyProfile/" class="mobile-nav-link" aria-current="page">Company Profile</a>
+            <a href="/ContactUs.html" class="mobile-nav-link">Contact Us!</a>
+          </nav>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HEADER -->
+    <header class="company-header">
+        <h1>Company Profile</h1>
+    </header>
+
+    <!-- GALLERY -->
+    <section class="gallery-container">
+        <div class="gallery-grid">
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-1.webp" alt="Company Profile 1"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-2.webp" alt="Company Profile 2"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-3.webp" alt="Company Profile 3"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-4.webp" alt="Company Profile 4"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-5.webp" alt="Company Profile 5"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-6.webp" alt="Company Profile 6"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-7.webp" alt="Company Profile 7"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-8.webp" alt="Company Profile 8"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-9.webp" alt="Company Profile 9"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-10.webp" alt="Company Profile 10"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-11.webp" alt="Company Profile 11"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-12.webp" alt="Company Profile 12"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-13.webp" alt="Company Profile 13"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-14.webp" alt="Company Profile 14"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-15.webp" alt="Company Profile 15"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-16.webp" alt="Company Profile 16"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-17.webp" alt="Company Profile 17"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-18.webp" alt="Company Profile 18"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-19.webp" alt="Company Profile 19"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-20.webp" alt="Company Profile 20"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-21.webp" alt="Company Profile 21"></div>
+            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-22.webp" alt="Company Profile 22"></div>
+        </div>
+    </section>
+
+    <!-- LIGHTBOX -->
+    <div class="lightbox-overlay" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+        <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous">&#10094;</button>
+        <img class="lightbox-content" id="lightboxImg" alt="Preview" />
+        <button class="lightbox-next" id="lightboxNext" aria-label="Next">&#10095;</button>
+        <div class="lightbox-toolbar">
+            <button class="lightbox-btn" id="zoomOut" aria-label="Zoom out">-</button>
+            <span class="lightbox-counter" id="lbCounter">1 / 22</span>
+            <button class="lightbox-btn" id="zoomIn" aria-label="Zoom in">+</button>
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script>
+      // Enhanced lightbox with nav + zoom
+      (function(){
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxClose = document.getElementById('lightboxClose');
+        const prevBtn = document.getElementById('lightboxPrev');
+        const nextBtn = document.getElementById('lightboxNext');
+        const zoomInBtn = document.getElementById('zoomIn');
+        const zoomOutBtn = document.getElementById('zoomOut');
+        const counter = document.getElementById('lbCounter');
+
+        const images = Array.from(document.querySelectorAll('.gallery-item img'));
+        let current = 0;
+        let scale = 1;
+
+        function openAt(index){
+          current = Math.max(0, Math.min(images.length - 1, index));
+          const src = images[current].src;
+          lightboxImg.src = src;
+          scale = 1;
+          lightboxImg.style.transform = `scale(${scale})`;
+          if (counter) counter.textContent = `${current + 1} / ${images.length}`;
+          lightbox.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+
+        images.forEach((img, idx) => img.addEventListener('click', () => openAt(idx)));
+
+        function closeLightbox(){
+          lightbox.classList.remove('active');
+          lightboxImg.src = '';
+          document.body.style.overflow = '';
+        }
+        function next(){ openAt(current + 1); }
+        function prev(){ openAt(current - 1); }
+        function zoom(delta){
+          scale = Math.max(0.5, Math.min(3, scale + delta));
+          lightboxImg.style.transform = `scale(${scale})`;
+        }
+
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+        nextBtn.addEventListener('click', (e) => { e.stopPropagation(); next(); });
+        prevBtn.addEventListener('click', (e) => { e.stopPropagation(); prev(); });
+        zoomInBtn.addEventListener('click', (e) => { e.stopPropagation(); zoom(0.2); });
+        zoomOutBtn.addEventListener('click', (e) => { e.stopPropagation(); zoom(-0.2); });
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+          if (!lightbox.classList.contains('active')) return;
+          if (e.key === 'Escape') return closeLightbox();
+          if (e.key === 'ArrowRight') return next();
+          if (e.key === 'ArrowLeft') return prev();
+          if (e.key === '+') return zoom(0.2);
+          if (e.key === '-') return zoom(-0.2);
+        });
+
+        // Swipe support
+        let startX = 0;
+        lightbox.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, {passive:true});
+        lightbox.addEventListener('touchend', (e) => {
+          const endX = e.changedTouches[0].clientX;
+          const diff = startX - endX;
+          if (Math.abs(diff) > 40) { diff > 0 ? next() : prev(); }
+        });
+      })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script> if (window.AOS) AOS.init(); </script>
+</body>
+</html>
+

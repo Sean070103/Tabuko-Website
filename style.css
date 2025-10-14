@@ -1134,7 +1134,7 @@ body {
 .navbar-links ul li a{
     color: #585757;
     text-decoration: none;
-    font-size: 15px;
+    font-size: 14px;
     white-space: nowrap; /* keep items like "Contact Us!" on a single line */
     padding: 6px 10px; /* space for hover background */
     border-radius: 6px;
@@ -1278,10 +1278,10 @@ body {
 }
 
 .navbar-links {
-    margin-left: 100px;
+    margin-left: 20px;
     display: flex;
     justify-content: center; /* Center the links */
-    gap: 16px; /* tighter spacing so all items fit */
+    gap: 12px; /* tighter spacing so all items fit */
     flex-grow: 1;
 }
 
@@ -3582,4 +3582,62 @@ footer{
 
 
 
+
+/* ===== Company Profile Page ===== */
+.header-profile {
+    clip-path: none;
+    padding: 70px 0; /* align under fixed navbar */
+}
+
+.profile-main {
+    background: #ffffff;
+}
+
+.profile-gallery-section {
+    padding: 40px 20px;
+}
+
+.profile-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.profile-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.profile-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+.profile-card:hover img {
+    transform: scale(1.05);
+    filter: brightness(1.05);
+}
+
+@media (max-width: 992px) {
+    .profile-gallery { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    .profile-card img { height: 200px; }
+}
+
+@media (max-width: 768px) {
+    .profile-gallery { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+    .profile-card img { height: 180px; }
+}
+
+@media (max-width: 480px) {
+    .profile-gallery { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .profile-card img { height: 150px; }
+}
 

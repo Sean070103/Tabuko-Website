@@ -138,30 +138,7 @@
 
     <!-- GALLERY -->
     <section class="gallery-container">
-        <div class="gallery-grid">
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-1.webp" alt="Company Profile 1"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-2.webp" alt="Company Profile 2"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-3.webp" alt="Company Profile 3"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-4.webp" alt="Company Profile 4"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-5.webp" alt="Company Profile 5"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-6.webp" alt="Company Profile 6"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-7.webp" alt="Company Profile 7"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-8.webp" alt="Company Profile 8"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-9.webp" alt="Company Profile 9"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-10.webp" alt="Company Profile 10"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-11.webp" alt="Company Profile 11"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-12.webp" alt="Company Profile 12"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-13.webp" alt="Company Profile 13"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-14.webp" alt="Company Profile 14"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-15.webp" alt="Company Profile 15"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-16.webp" alt="Company Profile 16"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-17.webp" alt="Company Profile 17"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-18.webp" alt="Company Profile 18"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-19.webp" alt="Company Profile 19"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-20.webp" alt="Company Profile 20"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-21.webp" alt="Company Profile 21"></div>
-            <div class="gallery-item"><img loading="lazy" src="../Images/TENC-Company-Profile%203-22.webp" alt="Company Profile 22"></div>
-        </div>
+        <div class="gallery-grid" id="cp-gallery"></div>
     </section>
 
     <!-- LIGHTBOX -->
@@ -179,8 +156,56 @@
 
     <script src="../script.js"></script>
     <script>
-      // Enhanced lightbox with nav + zoom
+      // Build gallery from available files, then init lightbox
       (function(){
+        const gallery = document.getElementById('cp-gallery');
+        const maxImages = 22; // per request
+        const bases = [
+          '../Images/updated%20company%20profile%20(1)-#.webp',
+          '../Images/updated%20company%20profile%20(1)-#.png',
+          '../Images/updated%20company%20profile%20(1)-#.jpg'
+        ];
+
+        function probe(src){
+          return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => resolve(src);
+            img.onerror = () => resolve(null);
+            img.src = src;
+          });
+        }
+
+        function createItem(src, idx){
+          const wrap = document.createElement('div');
+          wrap.className = 'gallery-item';
+          const img = document.createElement('img');
+          img.loading = 'lazy';
+          img.alt = `Company Profile ${idx}`;
+          img.src = src;
+          wrap.appendChild(img);
+          gallery.appendChild(wrap);
+        }
+
+        async function build(){
+          let foundCount = 0;
+          for (let i = 1; i <= maxImages; i++) {
+            let final = null;
+            for (const base of bases) {
+              const url = base.replace('#', String(i));
+              // eslint-disable-next-line no-await-in-loop
+              const ok = await probe(url);
+              if (ok) { final = ok; break; }
+            }
+            if (final) {
+              foundCount++;
+              createItem(final, i);
+            }
+          }
+          return foundCount;
+        }
+
+        build().then(count => {
+          // Enhanced lightbox with nav + zoom
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxClose = document.getElementById('lightboxClose');
@@ -243,6 +268,7 @@
           const endX = e.changedTouches[0].clientX;
           const diff = startX - endX;
           if (Math.abs(diff) > 40) { diff > 0 ? next() : prev(); }
+        });
         });
       })();
     </script>

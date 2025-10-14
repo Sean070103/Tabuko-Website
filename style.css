@@ -1541,9 +1541,13 @@ body {
 /* Mobile hamburger menu fixes */
 @media (max-width: 768px) {
     .navbar {
-        position: relative;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
         z-index: 1000;
     }
+    body { padding-top: 64px; }
     
     .hamburger {
         display: flex !important;
@@ -1563,7 +1567,10 @@ body {
 @media (max-width: 480px) {
     .navbar {
         padding: 10px 15px;
+        position: fixed;
+        top: 0; left: 0; width: 100%;
     }
+    body { padding-top: 56px; }
     
     .hamburger {
         display: flex !important;

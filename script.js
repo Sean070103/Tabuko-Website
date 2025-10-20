@@ -246,8 +246,11 @@ async function loadFacebookFeed() {
 
   // If we're not on the Updates page (elements not present), skip safely
   if (!updatesFeedEl || !loader) {
+    console.log("Updates elements not found");
     return;
   }
+
+  console.log("Loading updates for mobile...");
 
   try {
     // Load from local JSON file instead of RSS
@@ -350,6 +353,14 @@ async function loadFacebookFeed() {
         image: "Images/update_photos/heater.jpg",
         excerpt: "SPACE HEATER CONTROL PANEL FOR CUMMINS GENERATOR SET - Professional installation and setup of heating control systems.",
         sourceUrl: "https://www.facebook.com/share/p/19iE1Bt8jd/"
+      },
+      {
+        id: "fallback-3",
+        title: "Pioneer Adhesive 4th Automatic 10AMPS Battery Charger Panel Assembly",
+        date: "2025-01-23",
+        image: "Images/update_photos/adhesive.jpg",
+        excerpt: "PIONEER ADHESIVE 4TH AUTOMATIC 10AMPS BATTERY CHARGER PANEL ASSY - Advanced battery charging system installation.",
+        sourceUrl: "https://www.facebook.com/share/p/1NYzRBgdHU/"
       }
     ];
     
@@ -398,13 +409,22 @@ async function loadFacebookFeed() {
 document.addEventListener("DOMContentLoaded", () => {
   // Only attempt to load the feed if the container exists on the page
   if (document.getElementById("updates-feed")) {
-    // Add a timeout to ensure the page is fully loaded
+    // Immediate load for mobile
+    loadFacebookFeed();
+    // Also try again after a short delay
     setTimeout(() => {
       loadFacebookFeed();
-    }, 100);
+    }, 500);
   }
   initTraditionalCarousel();
   removeAutoScrollElements();
+});
+
+// Also try on window load as backup
+window.addEventListener('load', () => {
+  if (document.getElementById("updates-feed")) {
+    loadFacebookFeed();
+  }
 });
 
 // Remove any auto-scroll elements
@@ -445,14 +465,23 @@ function initTraditionalCarousel() {
     setupCarousel();
   }, 1000);
   
-  // Fallback: Try to initialize again after 3 seconds if no cards found
+  // Fallback: Try to initialize again after 2 seconds if no cards found
   setTimeout(() => {
     const cards = updatesGrid.querySelectorAll('.update-card');
     if (cards.length > 0 && totalSlides === 0) {
       console.log('Fallback: Re-initializing carousel...');
       setupCarousel();
     }
-  }, 3000);
+  }, 2000);
+  
+  // Additional fallback after 5 seconds
+  setTimeout(() => {
+    const cards = updatesGrid.querySelectorAll('.update-card');
+    if (cards.length > 0) {
+      console.log('Final fallback: Setting up carousel...');
+      setupCarousel();
+    }
+  }, 5000);
 
   function setupCarousel() {
     const cards = updatesGrid.querySelectorAll('.update-card');
@@ -513,25 +542,34 @@ function initTraditionalCarousel() {
     } else {
       cardsPerView = 3;
     }
+    console.log('Cards per view set to:', cardsPerView, 'for width:', containerWidth);
   }
 
   function createIndicators() {
     if (!indicators) return;
     
     indicators.innerHTML = '';
-    for (let i = 0; i < totalSlides; i++) {
+    
+    // Limit to maximum 5 dots for better mobile experience
+    const maxDots = Math.min(totalSlides, 5);
+    
+    for (let i = 0; i < maxDots; i++) {
       const dot = document.createElement('div');
       dot.className = 'carousel-dot';
-      if (i === currentSlide) {
+      if (i === (currentSlide % maxDots)) {
         dot.classList.add('active');
       }
       
       dot.addEventListener('click', () => {
-        goToSlide(i);
+        // Calculate which slide to go to based on dot position
+        const targetSlide = Math.floor((currentSlide / totalSlides) * totalSlides) + i;
+        goToSlide(targetSlide % totalSlides);
       });
       
       indicators.appendChild(dot);
     }
+    
+    // Page indicator removed for cleaner look
   }
 
   function updateCarousel() {
@@ -582,10 +620,15 @@ function initTraditionalCarousel() {
     }, 1500);
     
     // Update indicators
-    const dots = indicators.querySelectorAll('.carousel-dot');
-    dots.forEach((dot, index) => {
-      dot.classList.toggle('active', index === currentSlide);
-    });
+    if (indicators) {
+      const dots = indicators.querySelectorAll('.carousel-dot');
+      const maxDots = Math.min(totalSlides, 5);
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === (currentSlide % maxDots));
+      });
+      
+      // Page indicator removed
+    }
   }
 
   function nextSlideInfinite() {
@@ -593,7 +636,7 @@ function initTraditionalCarousel() {
     if (cards.length === 0) return;
 
     const cardWidth = cards[0].offsetWidth;
-    const gap = 32;
+    const gap = 16; // Reduced gap for mobile
     const slideWidth = (cardWidth + gap) * cardsPerView;
     
     currentSlide++;
@@ -602,7 +645,7 @@ function initTraditionalCarousel() {
     const newPosition = -(currentSlide * slideWidth);
     updatesGrid.style.transform = `translateX(${newPosition}px)`;
     
-    console.log(`Infinite slide ${currentSlide}, position: ${newPosition}px`);
+    console.log(`Infinite slide ${currentSlide}, position: ${newPosition}px, total slides: ${totalSlides}, cardWidth: ${cardWidth}`);
     
     // If we've moved past all original slides, reset to beginning
     if (currentSlide >= totalSlides) {
@@ -618,10 +661,15 @@ function initTraditionalCarousel() {
     }
     
     // Update indicators
-    const dots = indicators.querySelectorAll('.carousel-dot');
-    dots.forEach((dot, index) => {
-      dot.classList.toggle('active', index === (currentSlide % totalSlides));
-    });
+    if (indicators) {
+      const dots = indicators.querySelectorAll('.carousel-dot');
+      const maxDots = Math.min(totalSlides, 5);
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === (currentSlide % maxDots));
+      });
+      
+      // Page indicator removed
+    }
   }
 
   function nextSlide() {
@@ -685,38 +733,79 @@ function initTraditionalCarousel() {
     }
   });
 
-  // Touch/swipe support
+  // Enhanced touch/swipe support for mobile
   let startX = 0;
+  let startY = 0;
   let isDragging = false;
+  let hasMoved = false;
 
   updatesGrid.addEventListener('touchstart', (e) => {
     startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
     isDragging = true;
+    hasMoved = false;
     stopAutoPlay();
+    console.log('Touch start at:', startX, startY);
   });
 
   updatesGrid.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
-    e.preventDefault();
+    
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = Math.abs(currentX - startX);
+    const diffY = Math.abs(currentY - startY);
+    
+    // Only prevent default if it's a horizontal swipe
+    if (diffX > diffY && diffX > 10) {
+      e.preventDefault();
+      hasMoved = true;
+    }
   });
 
   updatesGrid.addEventListener('touchend', (e) => {
-    if (!isDragging) return;
+    if (!isDragging || !hasMoved) {
+      isDragging = false;
+      return;
+    }
     
     const endX = e.changedTouches[0].clientX;
-    const diff = startX - endX;
-    const threshold = 50;
+    const endY = e.changedTouches[0].clientY;
+    const diffX = startX - endX;
+    const diffY = Math.abs(startY - endY);
+    const threshold = 30; // Reduced threshold for better sensitivity
 
-    if (Math.abs(diff) > threshold) {
-      if (diff > 0) {
+    console.log('Touch end at:', endX, 'diffX:', diffX, 'diffY:', diffY);
+
+    // Only trigger if it's a horizontal swipe
+    if (Math.abs(diffX) > threshold && Math.abs(diffX) > diffY) {
+      if (diffX > 0) {
+        console.log('Swipe left - next slide');
         nextSlide();
       } else {
+        console.log('Swipe right - prev slide');
         prevSlide();
       }
     }
     
     isDragging = false;
-    setTimeout(startContinuousAutoPlay, 2000); // Resume after 2 seconds
+    hasMoved = false;
+    setTimeout(startContinuousAutoPlay, 3000); // Resume after 3 seconds
+  });
+
+  // Add click handlers for manual navigation
+  updatesGrid.addEventListener('click', (e) => {
+    const rect = updatesGrid.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const centerX = rect.width / 2;
+    
+    if (clickX > centerX) {
+      console.log('Click right side - next slide');
+      nextSlide();
+    } else {
+      console.log('Click left side - prev slide');
+      prevSlide();
+    }
   });
 
   // Pause on hover

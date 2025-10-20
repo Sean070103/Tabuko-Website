@@ -241,7 +241,6 @@ AOS.init();
 }
 
 async function loadFacebookFeed() {
-  const rssUrl = "https://rss.app/feeds/7KsSSyE0yrfuuBfB.xml";
   const updatesFeedEl = document.getElementById("updates-feed");
   const loader = document.getElementById("loader");
 
@@ -251,56 +250,55 @@ async function loadFacebookFeed() {
   }
 
   try {
-    const res = await fetch(rssUrl);
-    const text = await res.text();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(text, "text/xml");
+    // Load from local JSON file instead of RSS
+    console.log('Attempting to fetch updates from JSON...');
+    const res = await fetch('./data/updates.json');
+    console.log('Fetch response status:', res.status);
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    const updates = await res.json();
+    console.log('Successfully loaded updates:', updates);
 
     loader.style.display = "none";
     updatesFeedEl.innerHTML = ""; // Clear old content
-    const items = xml.querySelectorAll("item");
 
-    console.log("Found", items.length, "RSS items");
+    console.log("Found", updates.length, "updates from JSON");
 
-    items.forEach((item, index) => {
-      const title = item.querySelector("title")?.textContent || "No title";
-      const link = item.querySelector("link")?.textContent;
-      const desc = item.querySelector("description")?.textContent || "";
+    updates.forEach((update, index) => {
+      const { title, date, image, excerpt, sourceUrl } = update;
       
-      // Simple image extraction - just from description HTML
-      let imageUrl = null;
-      if (desc.includes('<img')) {
-        const imgMatch = desc.match(/<img[^>]+src="([^"]+)"/);
-        if (imgMatch) imageUrl = imgMatch[1];
-      }
-
-      console.log(`Item ${index + 1}:`, { title, link, hasImage: !!imageUrl });
+      console.log(`Update ${index + 1}:`, { title, date, hasImage: !!image });
 
       const card = document.createElement("article");
       card.className = "update-card";
 
-      // Clean up description HTML and limit length
-      const cleanDesc = desc.replace(/<[^>]*>/g, '').substring(0, 150);
+      // Format date for display
+      const formattedDate = new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
       
       card.innerHTML = `
         <div class="modern-card-header">
-          ${imageUrl ? `<div class="modern-image-container"><img src="${imageUrl}" alt="${title}" class="modern-image" onerror="this.style.display='none'"></div>` : `<div class="modern-placeholder"><div class="placeholder-icon">📱</div><div class="placeholder-text">Facebook Post</div></div>`}
+          ${image ? `<div class="modern-image-container"><img src="${image}" alt="${title}" class="modern-image" onerror="this.style.display='none'"></div>` : `<div class="modern-placeholder"><div class="placeholder-icon">📱</div><div class="placeholder-text">Update</div></div>`}
           <div class="modern-overlay">
-            <div class="modern-badge">Facebook</div>
+            <div class="modern-badge">Update</div>
           </div>
         </div>
         <div class="modern-card-content">
           <div class="modern-title">${title}</div>
-          ${cleanDesc ? `<div class="modern-description">${cleanDesc}${cleanDesc.length >= 150 ? '...' : ''}</div>` : ''}
+          ${excerpt ? `<div class="modern-description">${excerpt}</div>` : ''}
           <div class="modern-actions">
-            <a href="${link}" target="_blank" rel="noopener noreferrer" class="modern-button">
+            <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" class="modern-button">
               <svg class="modern-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
               <span>View Post</span>
             </a>
-                        </div>
-                    </div>
+          </div>
+        </div>
       `;
       
       // Make entire card clickable
@@ -308,22 +306,22 @@ async function loadFacebookFeed() {
         // Don't trigger if clicking on the button
         if (e.target.closest('.modern-button')) return;
         
-        // Open the Facebook post
-        if (link) {
-          window.open(link, '_blank', 'noopener,noreferrer');
+        // Open the source URL
+        if (sourceUrl) {
+          window.open(sourceUrl, '_blank', 'noopener,noreferrer');
         }
       });
       
       // Add keyboard accessibility
       card.setAttribute('tabindex', '0');
       card.setAttribute('role', 'button');
-      card.setAttribute('aria-label', `View Facebook post: ${title}`);
+      card.setAttribute('aria-label', `View update: ${title}`);
       
       card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          if (link) {
-            window.open(link, '_blank', 'noopener,noreferrer');
+          if (sourceUrl) {
+            window.open(sourceUrl, '_blank', 'noopener,noreferrer');
           }
         }
       });
@@ -331,16 +329,79 @@ async function loadFacebookFeed() {
       updatesFeedEl.appendChild(card);
     });
   } catch (error) {
-    console.error("Error loading feed:", error);
+    console.error("Error loading updates:", error);
     if (loader) loader.style.display = "none";
-    if (updatesFeedEl) updatesFeedEl.innerHTML = "<p>Unable to load updates at this time.</p>";
+    
+    // Fallback: Create some hardcoded updates if JSON fails
+    console.log("Creating fallback updates...");
+    const fallbackUpdates = [
+      {
+        id: "fallback-1",
+        title: "Industrial Engineering, IT & Computer Science Students OJT at Tabuko Energy",
+        date: "2025-01-25",
+        image: "Images/update_photos/ojt.jpg",
+        excerpt: "Our INDUSTRIAL ENGINEERING, INFORMATION TECHNOLOGY & COMPUTER SCIENCE Students doing their ON THE JOB TRAININGS at TABUKO ENERGY NETWORK CORP.",
+        sourceUrl: "https://www.facebook.com/share/p/18kAfpcGMZ/"
+      },
+      {
+        id: "fallback-2", 
+        title: "Space Heater Control Panel for Cummins Generator Set",
+        date: "2025-01-24",
+        image: "Images/update_photos/heater.jpg",
+        excerpt: "SPACE HEATER CONTROL PANEL FOR CUMMINS GENERATOR SET - Professional installation and setup of heating control systems.",
+        sourceUrl: "https://www.facebook.com/share/p/19iE1Bt8jd/"
+      }
+    ];
+    
+    if (updatesFeedEl) {
+      updatesFeedEl.innerHTML = "";
+      fallbackUpdates.forEach((update, index) => {
+        const { title, image, excerpt, sourceUrl } = update;
+        
+        const card = document.createElement("article");
+        card.className = "update-card";
+        
+        card.innerHTML = `
+          <div class="modern-card-header">
+            ${image ? `<div class="modern-image-container"><img src="${image}" alt="${title}" class="modern-image" onerror="this.style.display='none'"></div>` : `<div class="modern-placeholder"><div class="placeholder-icon">📱</div><div class="placeholder-text">Update</div></div>`}
+            <div class="modern-overlay">
+              <div class="modern-badge">Update</div>
+            </div>
+          </div>
+          <div class="modern-card-content">
+            <div class="modern-title">${title}</div>
+            ${excerpt ? `<div class="modern-description">${excerpt}</div>` : ''}
+            <div class="modern-actions">
+              <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" class="modern-button">
+                <svg class="modern-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <span>View Post</span>
+              </a>
+            </div>
+          </div>
+        `;
+        
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.modern-button')) return;
+          if (sourceUrl) {
+            window.open(sourceUrl, '_blank', 'noopener,noreferrer');
+          }
+        });
+        
+        updatesFeedEl.appendChild(card);
+      });
+    }
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   // Only attempt to load the feed if the container exists on the page
   if (document.getElementById("updates-feed")) {
-    loadFacebookFeed();
+    // Add a timeout to ensure the page is fully loaded
+    setTimeout(() => {
+      loadFacebookFeed();
+    }, 100);
   }
   initTraditionalCarousel();
   removeAutoScrollElements();
@@ -395,7 +456,11 @@ function initTraditionalCarousel() {
 
   function setupCarousel() {
     const cards = updatesGrid.querySelectorAll('.update-card');
-    if (cards.length === 0) return;
+    console.log('Setting up carousel with', cards.length, 'cards');
+    if (cards.length === 0) {
+      console.log('No cards found, skipping carousel setup');
+      return;
+    }
 
     // Check if new posts were added
     if (cards.length > lastPostCount) {
@@ -439,7 +504,9 @@ function initTraditionalCarousel() {
 
   function updateCardsPerView() {
     const containerWidth = window.innerWidth;
-    if (containerWidth < 768) {
+    if (containerWidth < 480) {
+      cardsPerView = 1;
+    } else if (containerWidth < 768) {
       cardsPerView = 1;
     } else if (containerWidth < 1024) {
       cardsPerView = 2;

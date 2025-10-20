@@ -755,6 +755,16 @@ button[class*="auto"] {
     }
 }
 
+.modern-date {
+    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin: 4px 0 8px 0;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
 .modern-description {
     color: #4a5568;
     font-size: 0.85rem;
@@ -955,79 +965,190 @@ button[class*="auto"] {
     }
 }
 
-/* Responsive Design - Horizontal */
+/* Enhanced Mobile Responsiveness */
 @media (max-width: 768px) {
-    .updates-grid {
-        padding: 1.5rem 0;
-        margin: 0 -1rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        gap: 1.5rem;
+    .carousel-container {
+        padding: 0 0.5rem;
+        margin: 0 auto;
+        max-width: 100%;
     }
     
-    .update-card {
-        min-width: 320px;
-        max-width: 380px;
-        border-radius: 16px;
-    }
-    
-    .modern-card-header {
-        height: 200px;
-        border-radius: 16px 16px 0 0;
-    }
-    
-    .modern-placeholder {
-        border-radius: 16px 16px 0 0;
-    }
-    
-    .modern-card-content {
-        padding: 16px;
-        gap: 12px;
-    }
-    
-    .modern-title {
-        font-size: 1.1rem;
-    }
-    
-    .modern-description {
-        font-size: 0.9rem;
-    }
-    
-    .modern-button {
-        padding: 10px 16px;
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 480px) {
     .updates-grid {
         padding: 1rem 0;
-        margin: 0 -0.5rem;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
+        margin: 0;
         gap: 1rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .updates-grid::-webkit-scrollbar {
+        display: none;
     }
     
     .update-card {
         min-width: 280px;
         max-width: 320px;
+        border-radius: 12px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+        margin-right: 1rem;
     }
     
     .modern-card-header {
         height: 180px;
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .modern-placeholder {
+        border-radius: 12px 12px 0 0;
     }
     
     .modern-card-content {
         padding: 12px;
-        gap: 10px;
+        gap: 8px;
     }
     
     .modern-title {
         font-size: 1rem;
+        line-height: 1.3;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
     }
     
     .modern-description {
         font-size: 0.85rem;
+        line-height: 1.4;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+    }
+    
+    .modern-button {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        border-radius: 15px;
+    }
+    
+    .modern-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .carousel-indicators {
+        margin-top: 1rem;
+        gap: 6px;
+    }
+    
+    .carousel-dot {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-container {
+        padding: 0 0.25rem;
+    }
+    
+    .updates-grid {
+        padding: 0.8rem 0;
+        margin: 0;
+        gap: 0.8rem;
+    }
+    
+    .update-card {
+        min-width: 260px;
+        max-width: 300px;
+        border-radius: 10px;
+    }
+    
+    .modern-card-header {
+        height: 160px;
+        border-radius: 10px 10px 0 0;
+    }
+    
+    .modern-placeholder {
+        border-radius: 10px 10px 0 0;
+    }
+    
+    .modern-card-content {
+        padding: 10px;
+        gap: 6px;
+    }
+    
+    .modern-title {
+        font-size: 0.9rem;
+        line-height: 1.25;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+    }
+    
+    .modern-description {
+        font-size: 0.8rem;
+        line-height: 1.3;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+    }
+    
+    .modern-button {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        border-radius: 12px;
+    }
+    
+    .modern-icon {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .carousel-indicators {
+        margin-top: 0.8rem;
+        gap: 4px;
+    }
+    
+    .carousel-dot {
+        width: 6px;
+        height: 6px;
+    }
+}
+
+@media (max-width: 360px) {
+    .carousel-container {
+        padding: 0 0.1rem;
+    }
+    
+    .update-card {
+        min-width: 240px;
+        max-width: 280px;
+    }
+    
+    .modern-card-header {
+        height: 140px;
+    }
+    
+    .modern-card-content {
+        padding: 8px;
+        gap: 4px;
+    }
+    
+    .modern-title {
+        font-size: 0.85rem;
+    }
+    
+    .modern-description {
+        font-size: 0.75rem;
+    }
+    
+    .modern-button {
+        padding: 5px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .modern-icon {
+        width: 14px;
+        height: 14px;
     }
 }
 
